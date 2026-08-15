@@ -1,14 +1,26 @@
+using cruddbfa.Data;
 using cruddbfa.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace cruddbfa.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly AppDbContext _context;
+
+        public HomeController(AppDbContext context)
         {
-            return View();
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var products = await _context.Product.ToListAsync();
+
+            return View(products);
         }
 
         public IActionResult Privacy()
