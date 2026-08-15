@@ -10,6 +10,23 @@
 
 <dl class="row">
 
+    @if (!string.IsNullOrEmpty(Model.ImageName))
+    {
+        <div class="mb-3">
+
+            <img src="~/images/products/@Model.ImageName"
+                 width="250"
+                 height="250"
+                 style="object-fit: cover;"
+                 class="rounded" />
+
+        </div>
+    }
+    else
+    {
+        <p>No image available.</p>
+    }
+
     <dt class="col-sm-3">
         Product Name
     </dt>

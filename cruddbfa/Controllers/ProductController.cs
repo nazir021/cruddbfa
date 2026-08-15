@@ -50,10 +50,30 @@ namespace cruddbfa.Controllers
         // POST: Product/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product)
+        public async Task<IActionResult> Create(Product product, IFormFile? ImageFile)
         {
             if (ModelState.IsValid)
             {
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    string folder = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot/images/products"
+                    );
+
+                    string fileName = Guid.NewGuid().ToString()
+                                     + Path.GetExtension(ImageFile.FileName);
+
+                    string filePath = Path.Combine(folder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImageFile.CopyToAsync(stream);
+                    }
+
+                    product.ImageName = fileName;
+                }
+
                 _context.Product.Add(product);
 
                 await _context.SaveChangesAsync();
@@ -85,7 +105,10 @@ namespace cruddbfa.Controllers
         // POST: Product/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product)
+        public async Task<IActionResult> Edit(
+    int id,
+    Product product,
+    IFormFile? ImageFile)
         {
             if (id != product.Id)
             {
@@ -94,6 +117,39 @@ namespace cruddbfa.Controllers
 
             if (ModelState.IsValid)
             {
+                var existingProduct = await _context.Product
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (existingProduct == null)
+                {
+                    return NotFound();
+                }
+
+                // Keep old image
+                product.ImageName = existingProduct.ImageName;
+
+                // New image uploaded
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    string folder = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot/images/products"
+                    );
+
+                    string fileName = Guid.NewGuid().ToString()
+                                     + Path.GetExtension(ImageFile.FileName);
+
+                    string filePath = Path.Combine(folder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImageFile.CopyToAsync(stream);
+                    }
+
+                    product.ImageName = fileName;
+                }
+
                 _context.Product.Update(product);
 
                 await _context.SaveChangesAsync();
@@ -128,10 +184,26 @@ namespace cruddbfa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.FindAsync(id);
+            var product = await _context.Product
+                .FindAsync(id);
 
             if (product != null)
             {
+                // Delete image from wwwroot
+                if (!string.IsNullOrEmpty(product.ImageName))
+                {
+                    string imagePath = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot/images/products",
+                        product.ImageName
+                    );
+
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+                }
+
                 _context.Product.Remove(product);
 
                 await _context.SaveChangesAsync();

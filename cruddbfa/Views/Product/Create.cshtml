@@ -11,7 +11,9 @@
 <div class="row">
     <div class="col-md-6">
 
-        <form asp-action="Create" method="post">
+        <form asp-action="Create"
+              method="post"
+              enctype="multipart/form-data">
 
             <div asp-validation-summary="ModelOnly"
                  class="text-danger">
@@ -41,10 +43,6 @@
                 <input asp-for="Category"
                        class="form-control" />
 
-                <span asp-validation-for="Category"
-                      class="text-danger">
-                </span>
-
             </div>
 
             <div class="mb-3">
@@ -55,10 +53,6 @@
 
                 <input asp-for="Price"
                        class="form-control" />
-
-                <span asp-validation-for="Price"
-                      class="text-danger">
-                </span>
 
             </div>
 
@@ -71,9 +65,19 @@
                 <input asp-for="StockQuantity"
                        class="form-control" />
 
-                <span asp-validation-for="StockQuantity"
-                      class="text-danger">
-                </span>
+            </div>
+
+            <!-- Image -->
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Product Image
+                </label>
+
+                <input type="file"
+                       name="ImageFile"
+                       class="form-control"
+                       accept="image/*" />
 
             </div>
 

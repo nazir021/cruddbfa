@@ -18,5 +18,7 @@ namespace cruddbfa.Models
         // Matches 'stock_quantity' in SQL
         public int StockQuantity { get; set; }
 
+        public string? ImageName { get; set; }
+
     }
 }

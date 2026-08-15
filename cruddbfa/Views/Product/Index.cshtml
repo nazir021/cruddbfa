@@ -16,6 +16,7 @@
 
     <thead>
         <tr>
+            <th>Image</th>
             <th>Id</th>
             <th>Product Name</th>
             <th>Category</th>
@@ -30,6 +31,20 @@
         @foreach (var product in Model)
         {
             <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(product.ImageName))
+                    {
+                        <img src="~/images/products/@product.ImageName"
+                             width="80"
+                             height="80"
+                             style="object-fit: cover;"
+                             class="rounded" />
+                    }
+                    else
+                    {
+                        <span>No Image</span>
+                    }
+                </td>
                 <td>@product.Id</td>
                 <td>@product.ProductName</td>
                 <td>@product.Category</td>
